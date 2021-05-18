@@ -23,12 +23,14 @@ namespace PeopleSportsSandbox
         }
 
         public virtual DbSet<Person> People { get; set; }
+        public virtual DbSet<Sports> Sports { get; set; }
+        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PeopleSports;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PeopleSportsM2M;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
             }
         }
 
@@ -53,20 +55,38 @@ namespace PeopleSportsSandbox
             }
         }
 
+        //public abstract class ConvertSportsToString<T> : ValueConverter<ICollection<Sports>, List<Sport>> where T: ICollection<Sports>
+        //{
+        //    public ConvertSportsToString() : base(
+        //         v => JsonConvert.SerializeObject(v.Select(e => e.Sport.ToString()).ToHashSet()),
+        //         v => JsonConvert.DeserializeObject<List<Sport>>(v)) 
+            
+        //    { 
+            
+        //    }
+        //}
+ 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-            var myAppconverter = new EnumCollectionJsonValueConverter<Sport>();
-            var myAppcomparer = new CollectionValueComparer<Sport>();
+            modelBuilder
+            .Entity<Sports>()
+            .Property(d => d.Sport)
+            .HasConversion(new EnumToStringConverter<Sport>());
 
             modelBuilder
-              .Entity<Person>()
-              .Property(e => e.Sports)
-              .HasConversion(myAppconverter)
-              .Metadata.SetValueComparer(myAppcomparer);
+            .Entity<Sports>().HasData(
+                Enum.GetValues(typeof(Sport))
+                .Cast<Sport>()
+                .Select(e => new Sports()
+                 {
+                     Sport = e
+                 })
+            );
+
+            //modelBuilder
+            //    .Entity<Person>()
+            //    .Property(d => d.Sports)
+            //    .HasConversion(new ConvertSportsToString<ICollection<Sports>>());
         }
-
-
-
-        }
-    }
+   }
+}

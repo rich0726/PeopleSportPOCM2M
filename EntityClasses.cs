@@ -8,11 +8,26 @@ namespace PeopleSportsSandbox
 {
     public class Person
     {
+
+        public Person()
+        {
+            Sports = new HashSet<Sports>();
+        }
+
         [Key]
         public int PersonID { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public ICollection<Sport> Sports { get; set; }
+        public virtual ICollection<Sports>? Sports { get; set; }
+    }
+
+    public class Sports
+    {
+        [Key]
+        public Sport Sport { get; set; }
+
+
+        public ICollection<Person> People { get; set; }
     }
 
     public enum Sport: int

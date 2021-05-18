@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace PeopleSportsSandbox.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableQuery]
     public class PeopleController : ODataController
     {
 
@@ -18,9 +20,8 @@ namespace PeopleSportsSandbox.Controllers
         {
 
             var myDB = new MyDbContext();
-            var myReturn = myDB.People.AsEnumerable<Person>().AsQueryable();
-            return (IQueryable<Person>)opts.ApplyTo(myReturn);
-            //return myReturn;
+            var myReturn = myDB.People.Include(x => x.Sports).AsQueryable();
+            return myReturn;
         }
     }
 }

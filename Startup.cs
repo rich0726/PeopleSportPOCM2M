@@ -75,7 +75,9 @@ namespace PeopleSportsSandbox
             {
                 var odataBuilder = new ODataConventionModelBuilder();
                 odataBuilder.EntitySet<Person>("People");
+                odataBuilder.EntitySet<Sports>("Sports");
                 odataBuilder.EnumType<Sport>();
+
                 var returnModel = odataBuilder.GetEdmModel();
                 return returnModel;
             }
